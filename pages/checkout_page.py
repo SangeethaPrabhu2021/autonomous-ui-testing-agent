@@ -37,10 +37,18 @@ class CheckoutPage:
         )
 
         # Overview rows have no semantic container role.
-        self.overview_items = page.get_by_test_id("inventory-item")
-        self.subtotal_label = page.get_by_text("Item total:", exact=False)
-        self.tax_label = page.get_by_text("Tax:", exact=False)
-        self.total_label = page.get_by_text("Total:", exact=False)
+        self.overview_items = page.locator(
+            '[data-test="inventory-item"]'
+        )
+        self.subtotal_label = page.locator(
+            '[data-test="subtotal-label"]'
+        )
+        self.tax_label = page.locator(
+            '[data-test="tax-label"]'
+        )
+        self.total_label = page.locator(
+            '[data-test="total-label"]'
+        )
         self.complete_header = page.get_by_role(
             "heading", name="Thank you for your order!", exact=True
         )
@@ -98,7 +106,9 @@ class CheckoutPage:
         return self.total_label.inner_text()
 
     def get_overview_item_names(self) -> list[str]:
-        return self.page.get_by_test_id("inventory-item-name").all_inner_texts()
+        return self.page.locator(
+            '[data-test="inventory-item-name"]'
+        ).all_inner_texts()
 
     def finish_order(self):
         self._field(self.finish_button, "finish", "Finish button").click()

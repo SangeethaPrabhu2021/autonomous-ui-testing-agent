@@ -31,7 +31,7 @@ def test_reads_local_issue(tmp_path: Path):
     assert issue.body == "Add the Backpack."
 
 
-def test_planner_rejects_unknown_test_id():
+def test_planner_falls_back_when_model_returns_unknown_test_id(caplog):
     class FakeResponse:
         text = AgentTestPlan(
             objective="Test something",
@@ -50,8 +50,63 @@ def test_planner_rejects_unknown_test_id():
         models = FakeModels()
 
     issue = read_issue(str(PROJECT_ROOT / "issues" / "issue_001.md"))
-    with pytest.raises(ValueError, match="unknown test IDs"):
-        create_test_plan(issue, client=FakeClient())
+    with caplog.at_level("INFO"):
+        plan = create_test_plan(issue, client=FakeClient())
+
+    assert [scenario.test_id for scenario in plan.scenarios] == [
+        "login_success",
+        "inventory_visible",
+        "add_backpack_to_cart",
+        "cart_contains_backpack",
+    ]
+    assert "Gemini planning failed" in caplog.text
+    assert "Falling back to deterministic allowlisted test plan" in caplog.text
+
+
+def test_planner_falls_back_when_gemini_quota_is_exhausted(caplog):
+    class FakeModels:
+        @staticmethod
+        def generate_content(**_kwargs):
+            raise RuntimeError("429 RESOURCE_EXHAUSTED")
+
+    class FakeClient:
+        models = FakeModels()
+
+    issue = read_issue(str(PROJECT_ROOT / "issues" / "issue_001.md"))
+    with caplog.at_level("INFO"):
+        plan = create_test_plan(issue, client=FakeClient())
+
+    assert plan.scenarios
+    assert all(
+        scenario.test_id in TEST_CATALOG for scenario in plan.scenarios
+    )
+    assert "Gemini planning failed" in caplog.text
+
+
+def test_planner_uses_current_default_model(monkeypatch):
+    class FakeResponse:
+        text = AgentTestPlan(
+            objective="Test login",
+            scenarios=[
+                PlannedScenario(test_id="login_success", reason="Required")
+            ],
+        ).model_dump_json()
+
+    class FakeModels:
+        @staticmethod
+        def generate_content(**kwargs):
+            assert kwargs["model"] == "gemini-2.5-flash"
+            return FakeResponse()
+
+    class FakeClient:
+        models = FakeModels()
+
+    monkeypatch.delenv("GEMINI_MODEL", raising=False)
+    issue = read_issue(str(PROJECT_ROOT / "issues" / "issue_001.md"))
+
+    plan = create_test_plan(issue, client=FakeClient())
+
+    assert plan.scenarios[0].test_id == "login_success"
 
 
 def test_catalog_maps_only_to_pytest_node_ids():
@@ -147,7 +202,7 @@ def test_evaluator_returns_ai_verdict_on_success(monkeypatch, caplog):
     class FakeModels:
         @staticmethod
         def generate_content(**kwargs):
-            assert kwargs["model"] == "gemini-1.5-flash"
+            assert kwargs["model"] == "gemini-2.5-flash"
             return FakeResponse()
 
     class FakeClient:

@@ -27,7 +27,7 @@ def evaluate_run(evidence: RunEvidence, client=None) -> EvaluationResult:
     try:
         client = client or genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
         response = client.models.generate_content(
-            model=os.getenv("GEMINI_MODEL", "gemini-1.5-flash"),
+            model=os.getenv("GEMINI_MODEL", "gemini-2.5-flash"),
             contents=(
                 f"{EVALUATOR_INSTRUCTIONS}\n\n"
                 f"Execution evidence:\n{evidence.model_dump_json(indent=2)}"

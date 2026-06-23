@@ -71,3 +71,6 @@ yarn.lock
 # API Keys & Secrets (safety measure)
 secrets.json
 credentials.json
+.env.example
+.env.example
+evidence/report.json

@@ -26,13 +26,18 @@ default issue:
 
 ```dotenv
 GEMINI_API_KEY=replace-with-your-gemini-api-key
-GEMINI_MODEL=gemini-1.5-flash
+GEMINI_MODEL=gemini-2.5-flash
 BASE_URL=https://www.saucedemo.com/
 HEADLESS=true
 DEFAULT_ISSUE=issues/issue_001.md
 ```
 
 `.env` is ignored by Git. Never commit real API keys.
+
+If Gemini planning is unavailable because of a model outage, quota limit, or
+invalid response, the agent uses a deterministic allowlisted test plan and
+continues the UI run. A quota response with a limit of `0` still requires an
+eligible Google AI project or billing configuration.
 
 ## Run
 

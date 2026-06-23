@@ -20,37 +20,45 @@ class CartPage:
         )
 
         # Cart rows have no useful landmark/role, so scope via their test ID.
-        self.cart_items = page.get_by_test_id("inventory-item")
+        self.cart_items = page.locator(
+            '[data-test="inventory-item"]'
+        )
 
     def get_item_names(self) -> list[str]:
-        return self.page.get_by_test_id("inventory-item-name").all_inner_texts()
+        return self.page.locator(
+            '[data-test="inventory-item-name"]'
+        ).all_inner_texts()
 
     def get_item_count(self) -> int:
         return self.cart_items.count()
 
     def remove_item_by_name(self, name: str):
         item = self.cart_items.filter(has_text=name)
+        test_id = f"remove-{name.lower().replace(' ', '-')}"
+        fallback = item.locator(f'[data-test="{test_id}"]')
         semantic_with_fallback(
             item.get_by_role("button", name="Remove", exact=True),
-            item.get_by_test_id(f"remove-{name.lower().replace(' ', '-')}"),
+            fallback,
             f"Remove button for {name}",
         ).click()
 
     def get_item_price(self, name: str) -> str:
         item = self.cart_items.filter(has_text=name)
-        return item.get_by_test_id("inventory-item-price").inner_text()
+        return item.locator(
+            '[data-test="inventory-item-price"]'
+        ).inner_text()
 
     def continue_to_shopping(self):
         semantic_with_fallback(
             self.continue_shopping,
-            self.page.get_by_test_id("continue-shopping"),
+            self.page.locator('[data-test="continue-shopping"]'),
             "Continue Shopping button",
         ).click()
 
     def proceed_to_checkout(self):
         semantic_with_fallback(
             self.checkout_button,
-            self.page.get_by_test_id("checkout"),
+            self.page.locator('[data-test="checkout"]'),
             "Checkout button",
         ).click()
 

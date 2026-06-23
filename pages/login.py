@@ -1,3 +1,5 @@
+import re
+
 from playwright.sync_api import Page, expect
 
 from agent.config import application_url
@@ -40,7 +42,10 @@ class LoginPage:
         ).click()
 
     def _error_message(self):
-        semantic = self.page.get_by_role("heading").filter(has_text="Error:")
+        semantic = self.page.get_by_role(
+            "heading",
+            name=re.compile(r"Epic sadface:", re.I),
+        )
         return semantic_with_fallback(
             semantic,
             self.page.get_by_test_id("error"),

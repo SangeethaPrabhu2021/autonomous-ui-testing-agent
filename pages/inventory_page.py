@@ -19,11 +19,17 @@ class InventoryPage:
         self.logout_link = page.get_by_role("link", name="Logout", exact=True)
 
         # SauceDemo does not expose an accessible name for the cart link/badge.
-        self.cart_link = page.get_by_test_id("shopping-cart-link")
-        self.cart_badge = page.get_by_test_id("shopping-cart-badge")
+        self.cart_link = page.locator(
+            '[data-test="shopping-cart-link"]'
+        )
+        self.cart_badge = page.locator(
+            '[data-test="shopping-cart-badge"]'
+        )
 
         # Repeated product cards need a stable container before semantic scoping.
-        self.inventory_items = page.get_by_test_id("inventory-item")
+        self.inventory_items = page.locator(
+            '[data-test="inventory-item"]'
+        )
 
     def get_item_by_name(self, name: str):
         return self.inventory_items.filter(has_text=name)
@@ -37,7 +43,7 @@ class InventoryPage:
         )
         return semantic_with_fallback(
             semantic,
-            item.get_by_test_id(test_id),
+            item.locator(f'[data-test="{test_id}"]'),
             f"{action} button for {name}",
         )
 
@@ -53,11 +59,15 @@ class InventoryPage:
     def get_item_price(self, name: str) -> str:
         item = self.get_item_by_name(name)
         # Price has no useful role/name, so keep the scoped stable test ID.
-        return item.get_by_test_id("inventory-item-price").inner_text()
+        return item.locator(
+            '[data-test="inventory-item-price"]'
+        ).inner_text()
 
     def get_all_item_names(self) -> list[str]:
         # Product links are duplicated by image/title; this test ID is unambiguous.
-        return self.page.get_by_test_id("inventory-item-name").all_inner_texts()
+        return self.page.locator(
+            '[data-test="inventory-item-name"]'
+        ).all_inner_texts()
 
     def get_cart_count(self) -> int:
         if self.cart_badge.count() == 0:
