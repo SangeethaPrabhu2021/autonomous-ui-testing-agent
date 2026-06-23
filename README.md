@@ -261,8 +261,6 @@ Run a single test:
 ```powershell
 python -m pytest tests/test_purchase_flow.py::TestFullPurchaseFlow::test_single_item_purchase -vv
 ```
-.\venv\Scripts\python.exe -m pytest tests/test_purchase_flow.py -vv  
-
 The current UI suite contains 22 tests and passes when the required Chromium
 browser is installed and SauceDemo is reachable.
 
