@@ -315,6 +315,9 @@ locator APIs, screenshots, tracing, and strong Pytest integration. These
 capabilities reduce custom synchronization code and support useful failure
 diagnostics.
 
+### Why Python?
+Python was chosen because it supports both LLM orchestration and browser automation cleanly. It has mature SDK support for Gemini, strong Playwright bindings, fast prototyping, and readable syntax for a take-home assignment. The architecture is not Python-specific and could be ported to TypeScript, Java, or another automation stack.
+
 ### Why Planner / Executor / Evaluator
 
 The three-stage architecture separates responsibilities:
