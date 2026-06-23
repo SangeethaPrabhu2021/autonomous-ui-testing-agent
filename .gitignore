@@ -1,0 +1,73 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg
+*.egg-info/
+dist/
+build/
+*.whl
+
+# Virtual environments
+.venv/
+venv/
+env/
+ENV/
+env.bak/
+venv.bak/
+
+# IDE & Editors
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+Thumbs.db
+*.sublime-project
+*.sublime-workspace
+
+# Testing & Playwright
+.pytest_cache/
+test-results/
+.coverage
+htmlcov/
+.test-cache/
+
+# Playwright browser data
+.playwright/
+browsers/
+
+# Project-specific artifacts
+evidence/runs/
+evidence/logs/
+evidence/screenshots/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# OS files
+.DS_Store
+.AppleDouble
+.LSOverride
+*.7z
+*.cab
+*.rar
+*.zip
+
+# Temporary files
+*.tmp
+*.temp
+*.log
+
+# Node (if using any frontend tooling)
+node_modules/
+package-lock.json
+yarn.lock
+
+# API Keys & Secrets (safety measure)
+secrets.json
+credentials.json
