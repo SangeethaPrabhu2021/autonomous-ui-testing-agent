@@ -1,0 +1,68 @@
+{
+  "issue": {
+    "title": "Verify a standard user can add the Backpack to the cart",
+    "body": "As a SauceDemo customer, I want to log in with the standard user and add the\nSauce Labs Backpack to my cart.\n\nAcceptance criteria:\n\n- Login succeeds.\n- The inventory page is displayed.\n- The Sauce Labs Backpack can be added.\n- The cart badge shows one item.\n- The cart contains the Sauce Labs Backpack.",
+    "source": "C:\\autonomous-ui-testing-agent\\issues\\issue_001.md"
+  },
+  "plan": {
+    "objective": "Verify a standard user can successfully log in, view inventory, add the Sauce Labs Backpack to the cart, and confirm both the cart badge and its contents.",
+    "scenarios": [
+      {
+        "test_id": "login_success",
+        "reason": "To verify that the standard user can log in successfully, addressing the 'Login succeeds' acceptance criterion."
+      },
+      {
+        "test_id": "inventory_visible",
+        "reason": "To confirm that the inventory page is displayed with expected products after login, addressing the 'The inventory page is displayed' acceptance criterion."
+      },
+      {
+        "test_id": "add_backpack_to_cart",
+        "reason": "To add the Sauce Labs Backpack to the cart and verify that the cart badge correctly shows one item, addressing the 'The Sauce Labs Backpack can be added' and 'The cart badge shows one item' acceptance criteria."
+      },
+      {
+        "test_id": "cart_contains_backpack",
+        "reason": "To add the Backpack and then verify that it specifically appears inside the cart, addressing the 'The Sauce Labs Backpack can be added' and 'The cart contains the Sauce Labs Backpack' acceptance criteria."
+      }
+    ]
+  },
+  "evidence": {
+    "objective": "Verify a standard user can successfully log in, view inventory, add the Sauce Labs Backpack to the cart, and confirm both the cart badge and its contents.",
+    "passed": true,
+    "results": [
+      {
+        "test_id": "login_success",
+        "passed": true,
+        "return_code": 0,
+        "output": ".                                                                        [100%]\n============================== warnings summary ===============================\nvenv\\Lib\\site-packages\\_pytest\\cacheprovider.py:469\n  C:\\autonomous-ui-testing-agent\\venv\\Lib\\site-packages\\_pytest\\cacheprovider.py:469: PytestCacheWarning: could not create cache path C:\\autonomous-ui-testing-agent\\.pytest_cache\\v\\cache\\nodeids: [WinError 183] Cannot create a file when that file already exists: 'C:\\\\autonomous-ui-testing-agent\\\\.pytest_cache\\\\v\\\\cache'\n    config.cache.set(\"cache/nodeids\", sorted(self.cached_nodeids))\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n1 passed, 1 warning in 4.95s",
+        "artifact_directory": "C:\\autonomous-ui-testing-agent\\evidence\\runs\\20260623T132227Z\\01_login_success"
+      },
+      {
+        "test_id": "inventory_visible",
+        "passed": true,
+        "return_code": 0,
+        "output": ".                                                                        [100%]\n============================== warnings summary ===============================\nvenv\\Lib\\site-packages\\_pytest\\cacheprovider.py:469\n  C:\\autonomous-ui-testing-agent\\venv\\Lib\\site-packages\\_pytest\\cacheprovider.py:469: PytestCacheWarning: could not create cache path C:\\autonomous-ui-testing-agent\\.pytest_cache\\v\\cache\\nodeids: [WinError 183] Cannot create a file when that file already exists: 'C:\\\\autonomous-ui-testing-agent\\\\.pytest_cache\\\\v\\\\cache'\n    config.cache.set(\"cache/nodeids\", sorted(self.cached_nodeids))\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n1 passed, 1 warning in 2.20s",
+        "artifact_directory": "C:\\autonomous-ui-testing-agent\\evidence\\runs\\20260623T132227Z\\02_inventory_visible"
+      },
+      {
+        "test_id": "add_backpack_to_cart",
+        "passed": true,
+        "return_code": 0,
+        "output": ".                                                                        [100%]\n============================== warnings summary ===============================\nvenv\\Lib\\site-packages\\_pytest\\cacheprovider.py:469\n  C:\\autonomous-ui-testing-agent\\venv\\Lib\\site-packages\\_pytest\\cacheprovider.py:469: PytestCacheWarning: could not create cache path C:\\autonomous-ui-testing-agent\\.pytest_cache\\v\\cache\\nodeids: [WinError 183] Cannot create a file when that file already exists: 'C:\\\\autonomous-ui-testing-agent\\\\.pytest_cache\\\\v\\\\cache'\n    config.cache.set(\"cache/nodeids\", sorted(self.cached_nodeids))\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n1 passed, 1 warning in 2.16s",
+        "artifact_directory": "C:\\autonomous-ui-testing-agent\\evidence\\runs\\20260623T132227Z\\03_add_backpack_to_cart"
+      },
+      {
+        "test_id": "cart_contains_backpack",
+        "passed": true,
+        "return_code": 0,
+        "output": ".                                                                        [100%]\n============================== warnings summary ===============================\nvenv\\Lib\\site-packages\\_pytest\\cacheprovider.py:469\n  C:\\autonomous-ui-testing-agent\\venv\\Lib\\site-packages\\_pytest\\cacheprovider.py:469: PytestCacheWarning: could not create cache path C:\\autonomous-ui-testing-agent\\.pytest_cache\\v\\cache\\nodeids: [WinError 183] Cannot create a file when that file already exists: 'C:\\\\autonomous-ui-testing-agent\\\\.pytest_cache\\\\v\\\\cache'\n    config.cache.set(\"cache/nodeids\", sorted(self.cached_nodeids))\n\n-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html\n1 passed, 1 warning in 2.28s",
+        "artifact_directory": "C:\\autonomous-ui-testing-agent\\evidence\\runs\\20260623T132227Z\\04_cart_contains_backpack"
+      }
+    ]
+  },
+  "verdict": {
+    "status": "passed",
+    "summary": "All tested scenarios passed, including successful user login, inventory viewing, adding the Sauce Labs Backpack to the cart, and verifying the cart contents.",
+    "failed_scenarios": [],
+    "recommendations": []
+  }
+}

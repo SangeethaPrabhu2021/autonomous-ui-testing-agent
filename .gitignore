@@ -39,11 +39,6 @@ htmlcov/
 .playwright/
 browsers/
 
-# Project-specific artifacts
-evidence/runs/
-evidence/logs/
-evidence/screenshots/
-
 # Environment variables
 .env
 .env.local
@@ -57,6 +52,7 @@ evidence/screenshots/
 *.cab
 *.rar
 *.zip
+!evidence/**/*.zip
 
 # Temporary files
 *.tmp
@@ -71,6 +67,3 @@ yarn.lock
 # API Keys & Secrets (safety measure)
 secrets.json
 credentials.json
-.env.example
-.env.example
-evidence/report.json
