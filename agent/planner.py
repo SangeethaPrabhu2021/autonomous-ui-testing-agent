@@ -18,7 +18,7 @@ Order scenarios from basic prerequisites to the main acceptance flow.
 def create_test_plan(issue: Issue, client=None) -> TestPlan:
     client = client or genai.Client(api_key=os.getenv("GEMINI_API_KEY"))
     response = client.models.generate_content(
-        model=os.getenv("GEMINI_MODEL", "gemini-3.5-flash"),
+        model=os.getenv("GEMINI_MODEL", "gemini-1.5-flash"),
         contents=(
             f"{PLANNER_INSTRUCTIONS}\n\n"
             f"Issue title: {issue.title}\n\n"

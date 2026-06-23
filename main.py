@@ -35,7 +35,10 @@ def parse_args(argv: list[str] | None = None) -> argparse.Namespace:
     parser.add_argument(
         "--status",
         default="Ready for QA",
-        help="GitHub issue status/column (e.g., 'Ready for QA' or 'RFQA'). Agent only executes if status is RFQA.",
+        help=(
+            "GitHub issue status/column (e.g., 'Ready for QA' or 'RFQA'). "
+            "Agent only executes if status is RFQA."
+        ),
     )
     parser.add_argument(
         "--plan-only",
@@ -52,7 +55,7 @@ def resolve_issue_source(cli_issue: str | None) -> str | None:
 
 def main() -> int:
     logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
-    load_dotenv(ROOT / ".env")
+    load_dotenv()
     args = parse_args()
 
     issue_source = resolve_issue_source(args.issue)
@@ -62,7 +65,7 @@ def main() -> int:
             file=sys.stderr,
         )
         return 2
-    
+
     # Check if issue is ready for QA before proceeding
     if not is_ready_for_qa(args.status):
         print(
