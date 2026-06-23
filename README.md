@@ -17,20 +17,37 @@ navigate the site; execution is restricted to the scenarios in
 .\.venv\Scripts\Activate.ps1
 pip install -r requirements.txt
 playwright install chromium
-$env:GEMINI_API_KEY="your-api-key"
+Copy-Item .env.example .env
 ```
 
-Optionally select a different model:
+Open `.env` and replace the placeholder `GEMINI_API_KEY` with your real key.
+The file also configures the Gemini model, target URL, browser visibility, and
+default issue:
 
-```powershell
-$env:GEMINI_MODEL="gemini-3.5-flash"
+```dotenv
+GEMINI_API_KEY=replace-with-your-gemini-api-key
+GEMINI_MODEL=gemini-1.5-flash
+BASE_URL=https://www.saucedemo.com/
+HEADLESS=true
+DEFAULT_ISSUE=issues/issue_001.md
 ```
+
+`.env` is ignored by Git. Never commit real API keys.
 
 ## Run
 
 ```powershell
 python main.py --issue issues/issue_001.md
 ```
+
+When `DEFAULT_ISSUE` is configured in `.env`, `--issue` may be omitted:
+
+```powershell
+python main.py
+```
+
+An explicit `--issue` always overrides `DEFAULT_ISSUE`, preserving existing
+CLI usage.
 
 Generate only the Gemini plan:
 

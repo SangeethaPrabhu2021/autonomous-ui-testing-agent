@@ -1,10 +1,11 @@
 from playwright.sync_api import Page, expect
 
+from agent.config import application_url
 from pages.locators import semantic_with_fallback
 
 
 class LoginPage:
-    URL = "https://www.saucedemo.com/"
+    URL = application_url()
 
     def __init__(self, page: Page):
         self.page = page

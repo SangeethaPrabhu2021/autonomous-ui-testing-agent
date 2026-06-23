@@ -4,6 +4,7 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from agent.catalog import TEST_CATALOG
+from agent.config import is_headless
 from agent.models import ExecutionResult, RunEvidence, TestPlan
 
 
@@ -33,6 +34,8 @@ def execute_plan(
             "--tracing=retain-on-failure",
             f"--output={artifact_dir}",
         ]
+        if not is_headless():
+            command.append("--headed")
         completed = subprocess.run(
             command,
             cwd=root,

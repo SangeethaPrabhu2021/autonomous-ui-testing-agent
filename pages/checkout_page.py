@@ -1,12 +1,13 @@
 from playwright.sync_api import Page, expect
 
+from agent.config import application_url
 from pages.locators import semantic_with_fallback
 
 
 class CheckoutPage:
-    URL_STEP_ONE = "https://www.saucedemo.com/checkout-step-one.html"
-    URL_STEP_TWO = "https://www.saucedemo.com/checkout-step-two.html"
-    URL_COMPLETE = "https://www.saucedemo.com/checkout-complete.html"
+    URL_STEP_ONE = application_url("checkout-step-one.html")
+    URL_STEP_TWO = application_url("checkout-step-two.html")
+    URL_COMPLETE = application_url("checkout-complete.html")
 
     def __init__(self, page: Page):
         self.page = page
