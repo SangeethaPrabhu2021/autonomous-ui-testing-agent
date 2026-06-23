@@ -57,7 +57,7 @@ Enable automated functional testing of web applications by:
 2. **Single-threaded execution** – scenarios execute sequentially to avoid race conditions
 3. **120-second timeout per scenario** – prevents hanging on unresponsive UI
 4. **English-only issue parsing** – currently processes English language issues only
-5. **No AI-driven self-healing** – if a scenario fails, execution stops (v1 limitation)
+5. **No AI-driven self-healing** – failures are recorded as evidence and execution continues with the remaining planned scenarios
 
 ---
 
@@ -276,9 +276,10 @@ For each scenario in the plan:
    )
    ```
 
-6. **Stop on failure (optional)**
-   - Current behavior: execute all scenarios
-   - Future: could stop after first failure for efficiency
+6. **Continue after failure**
+   - Execute every planned allow-listed scenario
+   - Record each scenario's exit code, logs, and artifact path
+   - Preserve all failures for the final report
 
 **Artifact Output:**
 - `screenshot_*.png` – Full-page screenshots at test completion
@@ -546,14 +547,46 @@ if not plan.scenarios:
 
 ### Recovery Strategy
 
-**Current (v1):** Stop on first critical error
+**Current behavior: Continue on failure**
 
-**Future (v2) - Self-Healing:**
-1. Detect locator failure
-2. Log warning: "Locator changed for [element]; attempting alternative approach"
-3. Re-run test with updated locator
-4. If recovery succeeds, log "Test recovered after UI change"
-5. If recovery fails, report as genuine failure with evidence
+1. Execute each planned allow-listed scenario in order.
+2. If a scenario fails, capture its exit code, logs, screenshot, trace, and
+   artifact path where available.
+3. Mark that scenario as failed and continue to the next planned scenario.
+4. Include every failed scenario in the final evidence and verdict.
+5. Derive the final status from observed execution results so a failed scenario
+   cannot produce a false PASS.
+
+Automated locator repair or AI-driven self-healing is not implemented. It is a
+possible future improvement, not current recovery behavior.
+
+### Concrete Failure Walkthrough
+
+Example: an expected element cannot be located or a Playwright assertion fails.
+
+1. Playwright waits until the locator or assertion timeout is reached.
+2. Pytest returns a non-zero exit code for the scenario.
+3. The executor records the failure reason from stdout/stderr and the scenario's
+   artifact directory.
+4. Pytest Playwright captures a screenshot and retains a trace when available.
+5. The executor continues with the next scenario in the finite test plan.
+6. The final report lists the failed scenario, failure output, and evidence
+   path; the evaluator is not permitted to convert the run to PASS.
+
+### Loop Prevention Strategy
+
+- Gemini cannot execute browser actions, shell commands, or arbitrary code.
+- Gemini can only select scenario IDs from the allow-listed catalog.
+- Unknown, invalid, empty, or unsupported scenario selections are rejected or
+  handled through the deterministic allow-listed fallback plan.
+- Each selected scenario maps to a finite Pytest/Playwright implementation.
+- Every scenario process has a fixed 120-second timeout.
+- Scenarios execute sequentially once; there is no recursive planning,
+  re-planning, or retry loop.
+- The executor completes after the finite scenario list is exhausted.
+
+These constraints guarantee termination even when LLM output is incomplete or
+imperfect.
 
 ---
 
@@ -691,12 +724,12 @@ expect(button).to_be_visible()  # Waits up to timeout (default 30s)
 
 ## Future Improvements
 
-### v2: Self-Healing Mechanism
+### Future: Self-Healing Mechanism
 - **Goal:** Automatically recover from minor UI changes
 - **Approach:** After locator failure, attempt alternative locators; log recovery
 - **Benefit:** Reduce false negatives from cosmetic UI changes
 
-### v2: Webhook Integration
+### Future: Webhook Integration
 - **Goal:** Trigger agent automatically when issue moves to "RFQA" column
 - **Approach:** GitHub Project webhook → local Flask server → agent invocation
 - **Benefit:** True CI/CD integration; zero-latency test triggering
@@ -747,7 +780,7 @@ The system prioritizes **autonomy** (minimal human intervention), **resilience**
 ### Environment Variables
 ```powershell
 $env:GEMINI_API_KEY = "your-api-key"        # Required
-$env:GEMINI_MODEL = "gemini-3.5-flash"      # Optional, default shown
+$env:GEMINI_MODEL = "gemini-2.0-flash"      # Optional, configured model
 $env:GITHUB_TOKEN = "your-github-token"     # Optional (private repos)
 ```
 

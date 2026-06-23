@@ -31,13 +31,26 @@ The agent does not execute arbitrary steps; rather, it intelligently chooses fro
 - **Use Case:** Issues requesting payment flow, order submission, or purchase verification
 
 ### Category 5: Full Purchase Workflows
-- **Purpose:** Validate complete multi-step scenarios
+- **Purpose:** Validate a distinct end-to-end session spanning login, multi-item cart, checkout, and logout
 - **Target Application:** All SauceDemo pages
-- **Use Case:** Issues requesting end-to-end testing of complex flows
+- **Use Case:** Issues requesting complete user-journey validation across page boundaries
 
 ---
 
 ## Detailed Scenario Specifications
+
+### Locator Strategy
+
+All scenarios use a semantic-first locator strategy:
+
+1. Prefer accessible roles and names, such as `get_by_role()` with the visible
+   control name.
+2. Use visible text where it represents stable user-facing content.
+3. Use scoped SauceDemo `data-test` CSS locators only when the page does not
+   expose a reliable semantic locator.
+
+The implementation does not depend on XPath-heavy navigation or unscoped DOM
+structure selectors.
 
 ---
 
@@ -185,10 +198,12 @@ Verify that after login, the inventory page displays all expected products.
 **Test Steps**
 1. Assert current page URL is `https://www.saucedemo.com/inventory.html`
 2. Assert "Products" heading is visible
-3. Locate all product items using `get_by_test_id("inventory-item")`
+3. Locate all product items using the SauceDemo fallback selector
+   `locator('[data-test="inventory-item"]')`
 4. Count visible product items
 5. Assert count equals 6
-6. Extract product names using `get_by_test_id("inventory-item-name")`
+6. Extract product names using
+   `locator('[data-test="inventory-item-name"]')`
 7. Assert all expected product names are present (exact text match):
    - "Sauce Labs Backpack"
    - "Sauce Labs Bike Light"
@@ -232,13 +247,16 @@ Verify that adding a product to the cart updates the cart badge and counter corr
 - Cart is initially empty (no badge shown or shows 0)
 
 **Test Steps**
-1. Locate "Sauce Labs Backpack" product item using `get_by_test_id("inventory-item").filter(has_text="Sauce Labs Backpack")`
+1. Locate the product card with
+   `locator('[data-test="inventory-item"]').filter(has_text="Sauce Labs Backpack")`
 2. Within that item, locate the "Add to cart" button using semantic locator with fallback:
    - Semantic: `get_by_role("button", name="Add to cart")`
-   - Fallback: `get_by_test_id("add-to-cart-sauce-labs-backpack")`
+   - SauceDemo fallback:
+     `locator('[data-test="add-to-cart-sauce-labs-backpack"]')`
 3. Click the button
 4. Wait for cart badge to appear
-5. Locate cart badge using `get_by_test_id("shopping-cart-badge")`
+5. Locate the cart badge using
+   `locator('[data-test="shopping-cart-badge"]')`
 6. Assert badge text equals "1"
 
 **Expected Results**
@@ -275,14 +293,16 @@ Verify that the cart page displays the correct product when navigated to after a
 - Cart page has not been visited yet
 
 **Test Steps**
-1. Locate cart link using `get_by_test_id("shopping-cart-link")`
+1. Locate the cart link using
+   `locator('[data-test="shopping-cart-link"]')`
 2. Click cart link
 3. Wait for page navigation to complete
 4. Assert current URL is `https://www.saucedemo.com/cart.html`
 5. Assert "Your Cart" heading is visible
-6. Locate all items in cart using `get_by_test_id("inventory-item")`
+6. Locate cart rows using the scoped SauceDemo `data-test` fallback selector
 7. Assert at least 1 item is displayed
-8. Locate product names using `get_by_test_id("inventory-item-name")`
+8. Locate product names using the scoped SauceDemo `data-test` fallback
+   selector
 9. Assert "Sauce Labs Backpack" is in the product names list
 10. Assert "Remove" button is visible next to the Backpack item
 
@@ -504,21 +524,31 @@ Verify that a user can complete a purchase and then log out successfully, with s
 
 ## Category 5: Full Purchase Workflows
 
-### Scenario ID: `single_item_purchase` (Alias for multi-step workflow)
+### End-to-End Flow: Multi-Item Purchase and Logout
 
-*See detailed specification under "Category 4: Checkout Flow" above.*
+**Objective**
+Validate one complete user session combining authentication, inventory
+interaction, a multi-item cart, checkout, order completion, and logout.
 
----
+**Flow**
+1. Log in as `standard_user` using accessible roles and names.
+2. Add the Sauce Labs Backpack and Bike Light using semantic button locators,
+   with scoped SauceDemo `data-test` fallbacks.
+3. Verify the cart badge shows two items.
+4. Open the cart and confirm both products are present.
+5. Complete checkout with valid customer details.
+6. Verify the order confirmation page.
+7. Return to inventory and log out.
+8. Verify the login page is displayed and ready for a new session.
 
-### Scenario ID: `multi_item_purchase` (Alias for multi-step workflow)
+**Expected Evidence**
+- Sequential screenshots showing inventory, cart, checkout, completion, and
+  logout states
+- Playwright trace retained on failure
+- Pytest output and scenario result in the final report
 
-*See detailed specification under "Category 4: Checkout Flow" above.*
-
----
-
-### Scenario ID: `logout_after_purchase` (Alias for complete session workflow)
-
-*See detailed specification under "Category 4: Checkout Flow" above.*
+This category documents the combined journey; executable coverage is provided
+by the allow-listed `multi_item_purchase` and `logout_after_purchase` scenarios.
 
 ---
 
@@ -664,6 +694,9 @@ Acceptance criteria:
 
 ## Scenario Catalog Reference
 
+Timing estimates are based on observed local runs and may vary by
+machine/network.
+
 Quick lookup table for all scenarios:
 
 | Scenario ID | Category | Prerequisite | Duration | Status |
@@ -677,6 +710,32 @@ Quick lookup table for all scenarios:
 | `single_item_purchase` | Checkout | login_success | ~10s | Active |
 | `multi_item_purchase` | Checkout | login_success | ~11s | Active |
 | `logout_after_purchase` | Session | single_item_purchase | ~15s | Active |
+
+---
+
+## Failure Scenario Example
+
+**Scenario ID:** `add_backpack_to_cart`
+
+**Example failure:** The Backpack product card is visible, but the expected
+"Add to cart" button cannot be located or clicked before the Playwright
+timeout.
+
+**Failure reason recorded:** The scenario receives a non-zero Pytest return
+code, and the captured output includes the locator timeout or assertion
+message.
+
+**Expected evidence:**
+
+- A screenshot showing the inventory state at failure time
+- A Playwright trace where available
+- Captured Pytest stdout/stderr
+- The scenario artifact-directory path
+
+**Final report behavior:** The scenario is marked failed, execution continues
+with the remaining planned allow-listed scenarios, and the final report lists
+the failure reason and evidence path. The run cannot be reported as PASS while
+an executed scenario has failed.
 
 ---
 

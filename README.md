@@ -154,6 +154,11 @@ autonomous-ui-testing-agent/
 
 ## Installation
 
+### Prerequisite
+
+Python 3.10 or newer is required. The codebase uses modern type-hint syntax,
+including union types such as `Path | None`, which is supported in Python 3.10+.
+
 ### 1. Clone the repository
 
 ```powershell
@@ -205,7 +210,7 @@ Example configuration:
 
 ```dotenv
 GEMINI_API_KEY=replace-with-your-gemini-api-key
-GEMINI_MODEL=gemini-2.5-flash
+GEMINI_MODEL=gemini-2.0-flash
 BASE_URL=https://www.saucedemo.com/
 HEADLESS=true
 DEFAULT_ISSUE=issues/issue_001.md
@@ -214,7 +219,7 @@ DEFAULT_ISSUE=issues/issue_001.md
 | Variable | Purpose |
 |---|---|
 | `GEMINI_API_KEY` | API key used by the planner and evaluator. Required by the current CLI workflow. |
-| `GEMINI_MODEL` | Gemini model used for planning and evaluation. Defaults to `gemini-2.5-flash`. |
+| `GEMINI_MODEL` | Gemini model used for planning and evaluation. Configured as `gemini-2.0-flash`. |
 | `BASE_URL` | Target application URL. Defaults to SauceDemo. |
 | `HEADLESS` | Runs Playwright headlessly unless set to `false`, `0`, `no`, or `off`. |
 | `DEFAULT_ISSUE` | Issue path or URL used when `--issue` is omitted. |
@@ -368,6 +373,11 @@ This approach keeps infrastructure or LLM failures distinct from product
 failures.
 
 ## Evidence and Reports
+
+Sample execution evidence is committed under `/evidence` for reviewer
+reference. It includes captured execution logs in `report.json`, sequential
+screenshots, Playwright traces where available, and the final structured
+report.
 
 Each agent run creates a UTC timestamped directory:
 
