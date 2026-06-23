@@ -47,3 +47,51 @@ python main.py --issue https://github.com/OWNER/REPO/issues/123
 For private repositories, set `GITHUB_TOKEN`. The final report is written to
 `evidence/report.json`; screenshots and traces are stored under
 `evidence/runs/`.
+
+### RFQA (Ready for QA) Trigger
+
+The agent respects a `--status` argument that simulates a GitHub Project card being moved to the "Ready for QA" column. Only when an issue has this status will the agent proceed with test execution.
+
+**Example: Run tests only if issue is RFQA**
+```powershell
+python main.py --issue issues/issue_001.md --status "Ready for QA"
+```
+
+**Example: Issue not ready for QA (agent skips execution)**
+```powershell
+python main.py --issue issues/issue_001.md --status "In Progress"
+# Output: ⏭️  Issue status 'In Progress' is not 'Ready for QA'.
+#         Agent will begin testing only when the issue is moved to the 'Ready for QA' column.
+```
+
+**Accepted status values:**
+- `"Ready for QA"` (default)
+- `"RFQA"`
+
+**Use Case - GitHub Project Automation:**
+
+In a production environment, this entry point would be triggered by:
+- **GitHub Webhook** – Listen for project card movement events
+- **GitHub Actions** – Use `repository_dispatch` event when card moves to "Ready for QA"
+- **GitHub App** – Custom app monitoring project board changes
+
+Example workflow that could trigger this agent:
+```yaml
+name: Run QA Tests on RFQA
+on:
+  repository_dispatch:
+    types: [issue-ready-for-qa]
+    
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - name: Run autonomous QA agent
+        run: |
+          python main.py \
+            --issue "https://github.com/${{ github.repository }}/issues/${{ github.event.client_payload.issue_number }}" \
+            --status "Ready for QA"
+```
+
+For now, the `--status` argument allows local simulation and testing of the RFQA workflow.
